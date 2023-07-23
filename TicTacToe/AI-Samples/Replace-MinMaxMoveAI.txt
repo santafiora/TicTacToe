@@ -1,0 +1,125 @@
+﻿
+*************************************************************************************
+Just for Info and Notice Remove The Lines from GameLogic.cs and Replace with this
+*************************************************************************************
+
+
+Replace the AI with this in the programm TicTacToeGame.cs on Line 121 or comment the old one out
+
+    //AI MOVE WITH MIN MAX
+       private void AImove()
+          {
+              if (buttons.Count > 0)
+              {
+                  var availableButtons = buttons.Where(b => b.IsAvailable).ToList();
+                  if (availableButtons.Count > 0)
+                  {
+                      int bestScore = int.MinValue;
+                      ButtonViewModel bestMove = null;
+
+                      foreach (var button in availableButtons)
+                      {
+                          button.IsEnabled = false;
+                          currentPlayer = Player.O;
+                          button.Text = currentPlayer.ToString();
+                         // button.Background = System.Windows.Media.Brushes.Red;
+                          button.IsAvailable = false;
+
+                          int score = Minimax(buttons, 0, false);
+
+                          button.IsEnabled = true;
+                          button.Text = string.Empty;
+                         // button.Background = System.Windows.Media.Brushes.LightGray;
+                          button.IsAvailable = true;
+
+                          if (score > bestScore)
+                          {
+                              bestScore = score;
+                              bestMove = button;
+                          }
+                      }
+
+                      if (bestMove != null)
+                      {
+                          bestMove.IsEnabled = false;
+                          currentPlayer = Player.O;
+                          bestMove.Text = currentPlayer.ToString();
+                          //bestMove.Background = System.Windows.Media.Brushes.Red;
+                          bestMove.IsAvailable = false;
+
+                          Check();
+
+                          if (currentPlayer == Player.O)
+                          {
+                              currentPlayer = Player.X;
+                          }
+                      }
+                  }
+              }
+          }
+
+  
+  *************************************************************************************
+  Just paste it where you want in the Class, TicTacToeGame.cs   no other modifications needed!!!!!!!!!!!!!!!!!!!
+  *************************************************************************************
+
+   public int Minimax(List<ButtonViewModel> board, int depth, bool isMaximizingPlayer)
+        {
+            int score = Evaluate(board);
+            if (score != 0 || depth >= maxDepth)
+            {
+                return score;
+            }
+
+            if (buttons.All(button => !button.IsAvailable))
+            {
+                return 0; // Unentschieden
+            }
+
+            if (isMaximizingPlayer)
+            {
+                int maxScore = int.MinValue;
+                foreach (var button in board.Where(b => b.IsAvailable))
+                {
+                    button.IsEnabled = false;
+                    currentPlayer = Player.O;
+                    button.Text = currentPlayer.ToString();
+
+                    button.IsAvailable = false;
+
+                    int currentScore = Minimax(board, depth + 1, false);
+
+                    button.IsEnabled = true;
+                    button.Text = string.Empty;
+
+                    button.IsAvailable = true;
+
+                    maxScore = Math.Max(maxScore, currentScore);
+                }
+
+                return maxScore;
+            }
+            else
+            {
+                int minScore = int.MaxValue;
+                foreach (var button in board.Where(b => b.IsAvailable))
+                {
+                    button.IsEnabled = false;
+                    currentPlayer = Player.X;
+                    button.Text = currentPlayer.ToString();
+
+                    button.IsAvailable = false;
+
+                    int currentScore = Minimax(board, depth + 1, true);
+
+                    button.IsEnabled = true;
+                    button.Text = string.Empty;
+
+                    button.IsAvailable = true;
+
+                    minScore = Math.Min(minScore, currentScore);
+                }
+
+                return minScore;
+            }
+        }
